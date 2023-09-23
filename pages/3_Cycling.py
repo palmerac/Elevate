@@ -57,7 +57,7 @@ with col1:
     st.subheader("Averages")
     st.write("Average Distance:", avg(df, "km", 2))
     st.write("Average Calories Burned:", avg(df, "Cals", 1))
-    # st.write("Average Duration:", avg(df, "Duration", 2))
+    st.write("Average Duration:", avg(df, "Duration", 2))
     st.write("Average Heart Rate:", avg(df, "bpm-Avg.", 2))
     st.write("Average Max Heart Rate:", avg(df, "bpm-hi", 2))
     st.write("Average Speed:", avg(df, "km/h", 2))
@@ -68,7 +68,7 @@ with col2:
     st.subheader("Medians")
     st.write("Median Distance:", med(df, "km", 2))
     st.write("Median Calories Burned:", med(df, "Cals", 1))
-    # st.write("Median Duration:", med(df, "Duration", 2))
+    st.write("Median Duration:", med(df, "Duration", 2))
     st.write("Median Heart Rate:", med(df, "bpm-Avg.", 2))
     st.write("Median Max Heart Rate:", med(df, "bpm-hi", 2))
     st.write("Median Speed:", med(df, "km/h", 2))
@@ -84,5 +84,5 @@ with col3:
             "Cals",
         ),
     )
-    # st.write("Total Duration:", tot(df, "Duration", 2))
+    st.write("Total Duration:", tot(df, "Duration", 2))
     st.write("Total Bike Rides:", df["km"].count())
