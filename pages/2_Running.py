@@ -8,17 +8,17 @@ df = pd.read_csv("runStats.csv")
 st.title("Run Stats Dashboard")
 
 
-def avg(col, rnd):
+def avg(df, col, rnd):
     ans = round(df[col].mean(), rnd)
     return ans
 
 
-def med(col, rnd):
+def med(df, col, rnd):
     ans = round(df[col].median(), rnd)
     return ans
 
 
-def tot(col, rnd=None):
+def tot(df, col, rnd=None):
     ans = round(df[col].sum(), rnd)
     return ans
 
@@ -50,6 +50,7 @@ with tab4:
 with tab5:
     st.dataframe(df)
     pass
+st.subheader("Running Statistics")
 
 # Create two columns
 col1, col2, col3 = st.columns(3)
@@ -57,34 +58,34 @@ col1, col2, col3 = st.columns(3)
 # Put content in the first column
 with col1:
     st.subheader("Averages")
-    st.write("Average Distance:", avg("km", 2))
-    st.write("Average Calories Burned:", avg("Cals", 1))
-    st.write("Average Duration:", avg("Duration", 2))
-    st.write("Average Heart Rate:", avg("bpm-Avg.", 2))
-    st.write("Average Max Heart Rate:", avg("bpm-hi", 2))
-    st.write("Average Speed:", avg("km/h", 2))
+    st.write("Average Distance:", avg(df, "km", 2))
+    st.write("Average Calories Burned:", avg(df, "Cals", 1))
+    st.write("Average Duration:", avg(df, "Duration", 2))
+    st.write("Average Heart Rate:", avg(df, "bpm-Avg.", 2))
+    st.write("Average Max Heart Rate:", avg(df, "bpm-hi", 2))
+    st.write("Average Speed:", avg(df, "km/h", 2))
     pass
 
 # Put content in the second column
 with col2:
     st.subheader("Medians")
-    st.write("Median Distance:", med("km", 2))
-    st.write("Median Calories Burned:", med("Cals", 1))
-    st.write("Median Duration:", med("Duration", 2))
-    st.write("Median Heart Rate:", med("bpm-Avg.", 2))
-    st.write("Median Max Heart Rate:", med("bpm-hi", 2))
-    st.write("Median Speed:", med("km/h", 2))
+    st.write("Median Distance:", med(df, "km", 2))
+    st.write("Median Calories Burned:", med(df, "Cals", 1))
+    st.write("Median Duration:", med(df, "Duration", 2))
+    st.write("Median Heart Rate:", med(df, "bpm-Avg.", 2))
+    st.write("Median Max Heart Rate:", med(df, "bpm-hi", 2))
+    st.write("Median Speed:", med(df, "km/h", 2))
     pass
 # Put content in the third column
 with col3:
     st.subheader("Totals")
-    st.write("Total Distance:", tot("km", 2))
+    st.write("Total Distance:", tot(df, "km", 2))
     st.write(
         "Total Calories Burned:",
         tot(
+            df,
             "Cals",
         ),
     )
-    st.write("Total Duration:", tot("Duration", 2))
+    st.write("Total Duration:", tot(df, "Duration", 2))
     st.write("Total Runs:", df["km"].count())
-    pass
