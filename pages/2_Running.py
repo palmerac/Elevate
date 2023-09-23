@@ -23,12 +23,13 @@ def tot(df, col, rnd=None):
     return ans
 
 
-tab1, tab2, tab3, tab4, tab5 = st.tabs(
+tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(
     [
         "Weekly Distance",
         "Boxplots",
         "Distance Histogram",
         "Avg HR Histogram",
+        "Cumulative Distance",
         "Raw File",
     ]
 )
@@ -48,6 +49,10 @@ with tab4:
     pass
 
 with tab5:
+    st.image("Graphs/Cumulative Distance.png")
+    pass
+
+with tab6:
     st.dataframe(df)
     pass
 st.subheader("Running Statistics")
