@@ -12,6 +12,12 @@ def tot(col, rnd=None):
     return total
 
 
+tot_rhr = dfR["bpm-Avg."].mean() * (60 * dfR["Duration"].sum())
+tot_bhr = dfB["bpm-Avg."].mean() * (60 * dfB["Duration"].sum())
+tot_hr = round(
+    tot_rhr + tot_bhr,
+)
+
 st.title("Strava Dashboard")
 st.markdown("\n  ")
 st.text("This is a dashboard for my Apple Watch activities.")
@@ -31,5 +37,6 @@ st.write(
         "Cals",
     ),
 )
+st.write("Total Heart Beats:", tot_hr)
 st.markdown("\n")
 st.text("Made by: Aaron Palmer")
