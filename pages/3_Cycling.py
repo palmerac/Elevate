@@ -3,6 +3,8 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
+st.set_page_config(layout="wide")
+
 # Read in CSV and set title
 df = pd.read_csv("bikeStats.csv")
 st.title("Bike Stats Dashboard")
@@ -65,34 +67,28 @@ col1, col2, col3 = st.columns(3)
 # Put content in the first column
 with col1:
     st.subheader("Averages")
-    st.write("Average Distance:", avg(df, "km", 2))
-    st.write("Average Calories Burned:", avg(df, "Cals", 1))
-    st.write("Average Duration:", avg(df, "Duration", 2))
-    st.write("Average Heart Rate:", avg(df, "bpm-Avg.", 2))
-    st.write("Average Max Heart Rate:", avg(df, "bpm-hi", 2))
-    st.write("Average Speed:", avg(df, "km/h", 2))
+    st.write("Average Distance(km):", avg(df, "km", 2))
+    st.write("Average Calories Burned:", avg(df, "Cals", None))
+    st.write("Average Duration(min):", avg(df, "mDuration", 2))
+    st.write("Average Heart Rate:", avg(df, "bpm-Avg.", 1))
+    st.write("Average Max Heart Rate:", avg(df, "bpm-hi", 1))
+    st.write("Average Speed(km/h):", avg(df, "km/h", 2))
     pass
 
 # Put content in the second column
 with col2:
     st.subheader("Medians")
-    st.write("Median Distance:", med(df, "km", 2))
-    st.write("Median Calories Burned:", med(df, "Cals", 1))
-    st.write("Median Duration:", med(df, "Duration", 2))
-    st.write("Median Heart Rate:", med(df, "bpm-Avg.", 2))
-    st.write("Median Max Heart Rate:", med(df, "bpm-hi", 2))
-    st.write("Median Speed:", med(df, "km/h", 2))
+    st.write("Median Distance(km):", med(df, "km", 2))
+    st.write("Median Calories Burned:", med(df, "Cals", None))
+    st.write("Median Duration(min):", med(df, "mDuration", 2))
+    st.write("Median Heart Rate:", med(df, "bpm-Avg.", 1))
+    st.write("Median Max Heart Rate:", med(df, "bpm-hi", 1))
+    st.write("Median Speed(km/h):", med(df, "km/h", 2))
     pass
 # Put content in the third column
 with col3:
     st.subheader("Totals")
-    st.write("Total Distance:", tot(df, "km", 2))
-    st.write(
-        "Total Calories Burned:",
-        tot(
-            df,
-            "Cals",
-        ),
-    )
-    st.write("Total Duration:", tot(df, "Duration", 2))
+    st.write("Total Distance(km):", tot(df, "km", 2))
+    st.write("Total Calories Burned:", tot(df, "Cals", None))
+    st.write("Total Duration(h):", tot(df, "Duration", 2))
     st.write("Total Bike Rides:", df["km"].count())

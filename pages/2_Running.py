@@ -3,6 +3,8 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
+st.set_page_config(layout="wide")
+
 # Read in CSV and set title
 df = pd.read_csv("runStats.csv")
 st.title("Run Stats Dashboard")
@@ -57,40 +59,49 @@ with tab6:
     pass
 st.subheader("Running Statistics")
 
-# Create two columns
-col1, col2, col3 = st.columns(3)
+# Create four columns
+col1, col2, col3, col4 = st.columns(4)
 
-# Put content in the first column
 with col1:
     st.subheader("Averages")
-    st.write("Average Distance:", avg(df, "km", 2))
-    st.write("Average Calories Burned:", avg(df, "Cals", 1))
-    st.write("Average Duration:", avg(df, "Duration", 2))
-    st.write("Average Heart Rate:", avg(df, "bpm-Avg.", 2))
-    st.write("Average Max Heart Rate:", avg(df, "bpm-hi", 2))
-    st.write("Average Speed:", avg(df, "km/h", 2))
+    st.write("Average Distance(km):", avg(df, "km", 2))
+    st.write("Average Calories Burned:", avg(df, "Cals", None))
+    st.write("Average Duration(min):", avg(df, "mDuration", 2))
+    st.write("Average Heart Rate:", avg(df, "bpm-Avg.", 1))
+    st.write("Average Max Heart Rate:", avg(df, "bpm-hi", 1))
+    st.write("Average Speed(km/h):", avg(df, "km/h", 2))
     pass
 
-# Put content in the second column
 with col2:
     st.subheader("Medians")
-    st.write("Median Distance:", med(df, "km", 2))
-    st.write("Median Calories Burned:", med(df, "Cals", 1))
-    st.write("Median Duration:", med(df, "Duration", 2))
-    st.write("Median Heart Rate:", med(df, "bpm-Avg.", 2))
-    st.write("Median Max Heart Rate:", med(df, "bpm-hi", 2))
-    st.write("Median Speed:", med(df, "km/h", 2))
+    st.write("Median Distance(km):", med(df, "km", 2))
+    st.write("Median Calories Burned:", med(df, "Cals", None))
+    st.write("Median Duration(min):", med(df, "mDuration", 2))
+    st.write("Median Heart Rate:", med(df, "bpm-Avg.", 1))
+    st.write("Median Max Heart Rate:", med(df, "bpm-hi", 1))
+    st.write("Median Speed(km/h):", med(df, "km/h", 2))
     pass
-# Put content in the third column
+
+num_runs = df["km"].count()
+avghr_u155 = df[df["bpm-Avg."] < 155].count()["bpm-Avg."]
+pavghr_u155 = round(avghr_u155 / num_runs * 100, 1)
+avghr_u150 = df[df["bpm-Avg."] < 150].count()["bpm-Avg."]
+pavghr_u150 = round(avghr_u150 / num_runs * 100, 1)
+ovr_5k = df[df["km"] >= 5].count()["km"]
+povr_5k = round(ovr_5k / num_runs * 100, 1)
+ovr_10k = df[df["km"] >= 10].count()["km"]
+povr_10k = round(ovr_10k / num_runs * 100, 1)
+
 with col3:
-    st.subheader("Totals")
-    st.write("Total Distance:", tot(df, "km", 2))
-    st.write(
-        "Total Calories Burned:",
-        tot(
-            df,
-            "Cals",
-        ),
-    )
-    st.write("Total Duration:", tot(df, "Duration", 2))
+    st.subheader("Counts")
     st.write("Total Runs:", df["km"].count())
+    st.write("Runs > 10k (%):", ovr_10k, " (", povr_10k, ")")
+    st.write("Runs > 5k (%):", ovr_5k, " (", povr_5k, ")")
+    st.write("Runs < 155bpm (%):", avghr_u155, " (", pavghr_u155, ")")
+    st.write("Runs < 150bpm (%):", avghr_u150, " (", pavghr_u150, ")")
+
+with col4:
+    st.subheader("Totals")
+    st.write("Total Distance(km):", tot(df, "km", 2))
+    st.write("Total Calories Burned:", tot(df, "Cals", None))
+    st.write("Total Duration(h):", tot(df, "Duration", 2))
