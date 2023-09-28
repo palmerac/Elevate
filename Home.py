@@ -8,6 +8,13 @@ dfB = pd.read_csv("bikeStats.csv")
 
 st.set_page_config(layout="wide")
 
+st.sidebar.markdown(
+    """
+---
+Created with ❤️ by [Aaron Palmer](https://github.com/palmerac/).
+"""
+)
+
 
 def tot(col, rnd=None):
     total = round(dfR[col].sum() + dfB[col].sum(), rnd)
