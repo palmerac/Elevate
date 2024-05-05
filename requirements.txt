@@ -3,3 +3,5 @@ pandas
 numpy
 matplotlib
 streamlit_extras
+seaborn
+datetime
