@@ -68,6 +68,11 @@ def avghr(df):
     bpm = round(beats / dur, 2)
     return bpm
 
+def speedtopace(pace):
+    minutes = int(pace)
+    seconds = int((pace - minutes) * 60)
+    return f"{minutes}:{seconds:02d}"
+
 df["sDuration"] = df["Duration"].apply(convert_to_seconds)
 df["mDuration"] = df["sDuration"] / 60
 df["hDuration"] = df["mDuration"] / 60
@@ -85,6 +90,9 @@ for g in [run, bike, walk, golf]:
     g["cumkm"] = g["km"].cumsum()
     g["cumdur"] = g['hDuration'].cumsum()
 
+run['pace'] = run['mDuration'] / run['km']
+run['lifetimePace'] = (run['cumdur'] * 60) / run['cumkm'] 
+
 # Streamlit main page
 st.title("Workout Dashboard")
 
@@ -96,7 +104,6 @@ with col1:
     st.write(f"Total Heart Beats: {df.totalBeats.sum():,.0f}")
     st.write(f"Total Calories Burned: {df.Cals.sum():,.0f}")
 with col2:
-    st.markdown('\n')
     st.write(f"Average Duration: {convert_to_time_string(df.sDuration.sum()/len(df))}")
     st.write(f"Average Distance: {round(df.km.mean(),2)} km")
     st.write(f"Average BPM: {avghr(df)}")
@@ -115,24 +122,40 @@ def display_summary_and_raw_data(data, title):
             st.write(f"Total Distance: {data.km.sum()} km")
             st.write(f"Total Heart Beats: {data.totalBeats.sum():,.0f}")  
             st.write(f"Total Calories Burned: {data.Cals.sum():,.0f}")  
-
+            if title == 'Runs':
+                st.write(f"Max Pace: {speedtopace(data['pace'].min())}")
+        
         with col2:
-            st.markdown("#")
+            if title == 'Runs':
+                st.write(f"Runs <= 150 BPM: {len(data[data['bpm-Avg.'] < 151])} ({round(len(data[data['bpm-Avg.'] < 151])/len(data)*100,2)}%)")
+            else: 
+                st.markdown("#")
             st.write(
                 f"Average Duration: {convert_to_time_string(data.sDuration.sum()/len(data))}"
             )
             st.write(f"Average Distance: {round(data.km.mean(),2)} km")
             st.write(f"Average BPM: {avghr(data)}")
             st.write(f"Average Calories Burned: {round(data.Cals.mean(),2)}")
+            if title == 'Runs':
+                st.write(f"Average Pace: {speedtopace(data['lifetimePace'].iloc[-1])}")
         with col3:
-            st.markdown("#")
+            if title == 'Runs':
+                st.write(f"Runs <= 155 BPM: {len(data[data['bpm-Avg.'] < 156])} ({round(len(data[data['bpm-Avg.'] < 156])/len(data)*100,2)}%)")
+            else: 
+                st.markdown("#")
             st.write(f"Median Duration {convert_to_time_string(data.sDuration.median())}")
             st.write(f"Median Distance: {round(data.km.median(),2)} km")
             st.write(f"Median BPM: {data['bpm-Avg.'].median()}")
             st.write(f"Median Calories Burned: {data.Cals.median():.0f}")
+            if title == 'Runs':
+                st.write(f"Median Pace: {speedtopace(data['pace'].median())}")
+    
     with tab2:
         with st.expander("Boxplot"):
-            columns = ['km', 'mDuration', 'bpm-Avg.', 'bpm-hi', 'km/h', 'Cals/h']
+            if title == 'Runs':
+                columns = ['km', 'mDuration', 'bpm-Avg.', 'bpm-hi', 'pace', 'Cals/h']
+            else: 
+                columns = ['km', 'mDuration', 'bpm-Avg.', 'bpm-hi', 'km/h', 'Cals/h']
             fig, axes = plt.subplots(nrows=3, ncols=2, figsize=(15, 15))
             axes = axes.flatten()
             for i, column in enumerate(columns):
@@ -163,9 +186,13 @@ def display_summary_and_raw_data(data, title):
         
         with st.expander("Duration (min)"):
             hist('mDuration')
-
-        with st.expander("Speed (km/h)"):
-            hist('km/h')
+            
+        if title == 'Runs':
+            with st.expander("Pace (min/km)"):
+                hist('pace')
+        else:
+            with st.expander("Speed (km/h)"):
+                hist('km/h')
 
     with tab3:
         with st.expander('Cumulative Distance'):
