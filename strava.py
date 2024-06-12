@@ -15,7 +15,7 @@ uploaded_file = st.sidebar.file_uploader("Upload your file", type=["csv"])
 if uploaded_file:
     df = pd.read_csv(uploaded_file)
 else:
-    df = pd.read_csv("HeartWatch-Workouts-20230717-to-20231106.csv")
+    df = pd.read_csv("HeartWatch-Workouts-20230717-to-20240609.csv")
 
 df = df.drop(
     [
@@ -39,9 +39,8 @@ df = df.drop(
 )
 
 
-df["ISO"] = pd.to_datetime(df["ISO"])
+df["ISO"] = pd.to_datetime(df["ISO"], utc=True)
 df["Duration"] = df["Duration"].astype(str)
-
 
 def convert_to_seconds(time_string):
     hours, minutes, seconds = map(int, time_string.split(":"))
@@ -80,6 +79,13 @@ df["hDuration"] = df["mDuration"] / 60
 df["totalBeats"] = round(
     df["mDuration"] * df["bpm-Avg."],
 )
+
+# df["ISO"] = pd.to_datetime(df["ISO"])
+year_filter = st.sidebar.selectbox("Filter by year", ["All", "2023", "2024"])
+if year_filter == "2023":
+    df = df[df["ISO"].dt.year == 2023]
+elif year_filter == "2024":
+    df = df[df["ISO"].dt.year == 2024]
 
 run = df[df["Type"] == "Running"]
 bike = df[df["Type"] == "Cycling"]
@@ -123,32 +129,44 @@ def display_summary_and_raw_data(data, title):
             st.write(f"Total Heart Beats: {data.totalBeats.sum():,.0f}")  
             st.write(f"Total Calories Burned: {data.Cals.sum():,.0f}")  
             if title == 'Runs':
-                st.write(f"Max Pace: {speedtopace(data['pace'].min())}")
+                percentage = round(len(data[data['bpm-Avg.'] < 151])/len(data)*100,2) if len(data) != 0 else 0
+                st.write(f"Runs <= 150 BPM: {len(data[data['bpm-Avg.'] < 151])} ({percentage}%)")
         
         with col2:
             if title == 'Runs':
-                st.write(f"Runs <= 150 BPM: {len(data[data['bpm-Avg.'] < 151])} ({round(len(data[data['bpm-Avg.'] < 151])/len(data)*100,2)}%)")
-            else: 
+                average_pace = speedtopace(data['lifetimePace'].iloc[-1]) if not data.empty else ""
+                st.write(f"Average Pace: {average_pace}")
+                
+            elif title == 'Rides' or 'Walks':
+                st.write(f"Average Speed: {(data['km'].sum() / data['hDuration'].sum()):.2f} km/h")
+            else:
                 st.markdown("#")
+            average_duration = convert_to_time_string(data.sDuration.sum()/len(data)) if len(data) != 0 else "0:00:00"
             st.write(
-                f"Average Duration: {convert_to_time_string(data.sDuration.sum()/len(data))}"
+                f"Average Duration: {average_duration}"
             )
             st.write(f"Average Distance: {round(data.km.mean(),2)} km")
             st.write(f"Average BPM: {avghr(data)}")
             st.write(f"Average Calories Burned: {round(data.Cals.mean(),2)}")
             if title == 'Runs':
-                st.write(f"Average Pace: {speedtopace(data['lifetimePace'].iloc[-1])}")
+                percentage = round(len(data[data['bpm-Avg.'] < 156])/len(data)*100,2) if len(data) != 0 else 0
+                st.write(f"Runs <= 155 BPM: {len(data[data['bpm-Avg.'] < 156])} ({percentage}%)")
         with col3:
             if title == 'Runs':
-                st.write(f"Runs <= 155 BPM: {len(data[data['bpm-Avg.'] < 156])} ({round(len(data[data['bpm-Avg.'] < 156])/len(data)*100,2)}%)")
+                median_pace = speedtopace(data['pace'].median()) if not np.isnan(data['pace'].median()) else 0
+                st.write(f"Median Pace: {median_pace}")
+                
+            elif title == 'Rides' or 'Walks':
+                median_speed = data['km/h'].median() if not np.isnan(data['km/h'].median()) else 0
+                st.write(f"Median Speed: {median_speed} km/h")
             else: 
                 st.markdown("#")
-            st.write(f"Median Duration {convert_to_time_string(data.sDuration.median())}")
-            st.write(f"Median Distance: {round(data.km.median(),2)} km")
-            st.write(f"Median BPM: {data['bpm-Avg.'].median()}")
-            st.write(f"Median Calories Burned: {data.Cals.median():.0f}")
+            st.write(f"Median Duration {convert_to_time_string(data.sDuration.median() if not np.isnan(data.sDuration.median()) else 0)}")
+            st.write(f"Median Distance: {round(data.km.median() if not np.isnan(data.km.median()) else 0,2)} km")
+            st.write(f"Median BPM: {data['bpm-Avg.'].median() if not np.isnan(data['bpm-Avg.'].median()) else 0}")
+            st.write(f"Median Calories Burned: {data.Cals.median() if not np.isnan(data.Cals.median()) else 0:.0f}")
             if title == 'Runs':
-                st.write(f"Median Pace: {speedtopace(data['pace'].median())}")
+                st.write(f"Runs <= 160 BPM: {len(data[data['bpm-Avg.'] < 161]) if len(data) != 0 else 0} ({round(len(data[data['bpm-Avg.'] < 161])/len(data)*100,2) if len(data) != 0 else 0}%)")
     
     with tab2:
         with st.expander("Boxplot"):
